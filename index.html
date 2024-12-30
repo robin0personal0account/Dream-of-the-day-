@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starry Wish Maker 🌠</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Reset and Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0e0b16, #2b2e4a);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #f9c74f;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .container {
+            background: rgba(15, 12, 22, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            border: 2px solid #f9c74f;
+            border-radius: 5px;
+            background: #2b2e4a;
+            color: #fff;
+            font-size: 1rem;
+            padding: 10px;
+            outline: none;
+            resize: none;
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            display: inline-block;
+            margin-top: 15px;
+            background: #f9c74f;
+            color: #0e0b16;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #f3722c;
+        }
+
+        #outputCanvas {
+            display: none;
+            margin-top: 20px;
+            border-radius: 10px;
+            max-width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            textarea {
+                font-size: 0.9rem;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 Starry Wish Maker 🌠</h1>
+    <div class="container">
+        <textarea id="wishInput" placeholder="Type your magical wish here..."></textarea>
+        <button onclick="createWish()">Make a Wish ✨</button>
+    </div>
+    <canvas id="outputCanvas" width="400" height="400"></canvas>
+
+    <script>
+        function createWish() {
+            const wishInput = document.getElementById('wishInput');
+            const wishText = wishInput.value.trim();
+
+            if (!wishText) {
+                alert("Please type a wish before making it magical!");
+                return;
+            }
+
+            const canvas = document.getElementById('outputCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set up gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2b2e4a');
+            gradient.addColorStop(1, '#0e0b16');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add glowing stars
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2 + 1;
+                ctx.fillStyle = `rgba(249, 199, 79, ${Math.random()})`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Add wish text with shadow
+            ctx.font = '20px Poppins';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.shadowBlur = 4;
+            wrapText(ctx, wishText, canvas.width / 2, canvas.height / 2, canvas.width - 40, 25);
+
+            // Display and save the image
+            canvas.style.display = 'block';
+            html2canvas(canvas).then((canvas) => {
+                const link = document.createElement('a');
+                link.download = 'My_Wish.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            const lines = [];
+
+            for (let i = 0; i < words.length; i++) {
+                const testLine = line + words[i] + ' ';
+                const metrics = ctx.measureText(testLine);
+                const testWidth = metrics.width;
+
+                if (testWidth > maxWidth && i > 0) {
+                    lines.push(line);
+                    line = words[i] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+
+            lines.push(line);
+
+            lines.forEach((line, index) => {
+                ctx.fillText(line, x, y + index * lineHeight);
+            });
+        }
+    </script>
+</body>
+  </html>
